@@ -2,5 +2,7 @@
   "name": "Motorcycle Service Log",
   "description": "Mobile maintenance tracking and service expenditure log for motorcycles with offline storage and installability.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
