@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bike, 
   Coins, 
@@ -7,10 +7,12 @@ import {
   Plus,
   Share,
   PlusSquare,
-  X
+  X,
+  Smartphone
 } from 'lucide-react';
 import { ActiveTab } from '../types';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { PhoneInstallModal } from './PhoneInstallModal';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -25,10 +27,14 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddService,
 }) => {
   const { isInstallable, isInstalled, install, showIOSModal, closeIOSModal } = usePWAInstall();
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
 
   const handleInstallClick = async () => {
-    if (isInstallable) {
+    const isMobileDevice = typeof window !== 'undefined' && /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (isMobileDevice && isInstallable) {
       await install();
+    } else {
+      setShowPhoneModal(true);
     }
   };
 
@@ -100,14 +106,15 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Actions */}
         <div className="flex items-center gap-2">
           {/* Install Button: Only visible before install; disappears completely once installed on phone */}
-          {!isInstalled && isInstallable && (
+          {!isInstalled && (
             <button
               onClick={handleInstallClick}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-orange-400 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
-              title="Install App to Phone Home Screen"
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-orange-400 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+              title="Install App to Phone"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Install App</span>
+              <Smartphone className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Install to Phone</span>
+              <span className="sm:hidden">Install</span>
             </button>
           )}
 
@@ -178,6 +185,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       )}
+
+      {/* Phone Install / QR Code Modal */}
+      <PhoneInstallModal
+        isOpen={showPhoneModal}
+        onClose={() => setShowPhoneModal(false)}
+        onDirectInstall={install}
+        canDirectInstall={isInstallable}
+      />
     </header>
   );
 };
